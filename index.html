@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Chat</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; }
+    #chat { max-width: 500px; margin: 50px auto; }
+    #messages { height: 300px; overflow-y: auto; background: white; padding: 10px; border-radius: 10px; }
+    .me { text-align: right; color: blue; }
+    .other { text-align: left; color: green; }
+    input { width: 80%; padding: 10px; }
+    button { padding: 10px; }
+  </style>
+</head>
+<body>
+
+<div id="chat">
+  <h2>Mini Chat</h2>
+  <div id="messages"></div>
+  <input id="messageInput" placeholder="Type message..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+  const socket = io("mini-app-production-247e.up.railway.app");
+
+  const messages = document.getElementById("messages");
+  const input = document.getElementById("messageInput");
+
+  function sendMessage() {
+    const message = input.value;
+    if (message.trim() === "") return;
+
+    const div = document.createElement("div");
+    div.className = "me";
+    div.textContent = message;
+    messages.appendChild(div);
+
+    socket.emit("send_message", message);
+    input.value = "";
+  }
+
+  socket.on("receive_message", (data) => {
+    const div = document.createElement("div");
+    div.className = "other";
+    div.textContent = data;
+    messages.appendChild(div);
+  });
+</script>
+
+</body>
+</html>
